@@ -1,6 +1,7 @@
 import { groq } from "next-sanity";
 import { client } from "./client";
 
+
 // 1. Get all slugs for static generation
 export async function getAllReviewSlugs() {
   return client.fetch(groq`*[_type == "review" && defined(slug.current)][].slug.current`);
@@ -82,8 +83,8 @@ export async function getReviewsByCategory(slug: string) {
 }
 
 // Search Query
+// Search Query
 export async function searchReviews(query: string) {
-  // This looks for the 'query' text inside the title OR the summary
   const searchString = `*[_type == "review" && (title match $query + "*" || summary match $query + "*")] | order(publishedAt desc){
     title,
     "slug": slug.current,
@@ -94,5 +95,6 @@ export async function searchReviews(query: string) {
     "categories": categories[]->title
   }`;
   
-  return client.fetch(searchString, { query });
+  // The 'as any' is a safety override that forces TypeScript to accept the parameters
+  return client.fetch(searchString, { query } as any);
 }
